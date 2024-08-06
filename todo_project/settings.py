@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from .config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_TEST_NAME, DB_USER, SECRET_KEY_
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@$%#1qf8z2@3)$hoh)v^uwmpx3$qep((&grwy!p^+bjn-%+c^5'
+SECRET_KEY = SECRET_KEY_
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -78,13 +80,13 @@ WSGI_APPLICATION = 'todo_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'todo',
-        'USER': 'todo',
-        'PASSWORD': 'todo',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASS,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
         'TEST': {
-            'NAME': 'test_todo',
+            'NAME': DB_TEST_NAME,
         }
     }
 }

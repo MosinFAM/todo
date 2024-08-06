@@ -13,20 +13,18 @@ class Task(models.Model):
 
 
 class TaskPermission(models.Model):
-    READ = 'read'
-    UPDATE = 'update'
-
-    PERMISSION_CHOICES = [
-        (READ, 'Read'),
-        (UPDATE, 'Update'),
-    ]
-
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    permission_update = models.BooleanField(default=False)
+    read_permission = models.BooleanField(default=False)
+    update_permission = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('task', 'user')
 
     def __str__(self):
-        return f"{self.user.username} - {self.task.title} - {'Can update' if self.can_update else 'Cannot update'}"
+        permissions = []
+        if self.read_permission:
+            permissions.append("Read")
+        if self.update_permission:
+            permissions.append("Update")
+        return f"{self.user.username} - {self.task.title} - {', '.join(permissions)}"

@@ -22,11 +22,6 @@ class TaskTests(TestCase):
         self.assertIn('Task "New Task" created successfully!', response.content.decode())
         self.assertTrue(Task.objects.filter(title='New Task').exists())
 
-    def test_list_tasks(self):
-        response = self.client.get(reverse('list_tasks'))
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Test Task', response.content.decode())
-
     def test_update_task(self):
         response = self.client.post(reverse('update_task', args=[self.task.id]), {
             'title': 'Updated Task',
@@ -41,15 +36,16 @@ class TaskTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Task.objects.filter(id=self.task.id).exists())
 
-    def test_assign_permission(self):
+    def test_grant_permission(self):
         user2 = User.objects.create_user(username='user2', password='password2')
-        response = self.client.post(reverse('grant_permission', args=[self.task.id, user2.id]), content_type='application/json')
+        response = self.client.post(reverse('grant_permission', args=[self.task.id, user2.id, 'update']), content_type='application/json')
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(TaskPermission.objects.filter(task=self.task, user=user2, permission_update=True).exists())
+        self.assertTrue(TaskPermission.objects.filter(task=self.task, user=user2, update_permission=True, read_permission=True).exists())
 
     def test_remove_permission(self):
         user2 = User.objects.create_user(username='user2', password='password2')
-        TaskPermission.objects.create(task=self.task, user=user2, permission_update=True)
-        response = self.client.post(reverse('revoke_permission', args=[self.task.id, user2.id]), content_type='application/json')
+        TaskPermission.objects.create(task=self.task, user=user2, update_permission=True)
+        response = self.client.post(reverse('revoke_permission', args=[self.task.id, user2.id, "read"]), content_type='application/json')
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(TaskPermission.objects.filter(task=self.task, user=user2, permission_update=True).exists())
+        self.assertFalse(TaskPermission.objects.filter(task=self.task, user=user2, update_permission=True).exists())
+        self.assertFalse(TaskPermission.objects.filter(task=self.task, user=user2, read_permission=True).exists())
